@@ -12,6 +12,7 @@
 #  reject_reports  :boolean          default(FALSE), not null
 #  private_comment :text
 #  public_comment  :text
+#  obfuscate       :boolean          default(FALSE), not null
 #
 
 class DomainBlock < ApplicationRecord

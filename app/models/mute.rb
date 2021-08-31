@@ -9,6 +9,7 @@
 #  account_id         :bigint(8)        not null
 #  target_account_id  :bigint(8)        not null
 #  hide_notifications :boolean          default(TRUE), not null
+#  expires_at         :datetime
 #
 
 class Mute < ApplicationRecord

@@ -7,6 +7,7 @@
 #  domain     :string           default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  parent_id  :bigint(8)
 #
 
 class EmailDomainBlock < ApplicationRecord

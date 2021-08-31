@@ -11,7 +11,6 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  last_status_at  :datetime
-#  lock_version    :integer          default(0), not null
 #
 
 class AccountStat < ApplicationRecord

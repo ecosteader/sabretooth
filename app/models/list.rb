@@ -3,11 +3,13 @@
 #
 # Table name: lists
 #
-#  id         :bigint(8)        not null, primary key
-#  account_id :bigint(8)        not null
-#  title      :string           default(""), not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id             :bigint(8)        not null, primary key
+#  account_id     :bigint(8)        not null
+#  title          :string           default(""), not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  is_exclusive   :boolean          default(FALSE)
+#  replies_policy :integer          default(0), not null
 #
 
 class List < ApplicationRecord
