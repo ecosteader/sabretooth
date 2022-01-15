@@ -1,7 +1,9 @@
 
-# Mastodon Fediverse servers with Apache2 
+# Mastodon Fediverse servers with Apache2 UNDOCKED;
+
+# Because technical writers cannot afford to be uncredited.
 # Localize your stream to escape the Fascistbook
-## (find friends who understand)
+## (getting almost impossible to find friends who understand)
 
 
 ## Set up your localhost environment to develop and backup your custom Mastodon instance. 
@@ -22,7 +24,7 @@
 System-based install prerequisites:
 
     sudo apt install autoconf bison build-essential zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev
-    apache2 node-cacache libmemcached-dev libnss-cache
+    apache2 node-cacache cccache libmemcached-dev libnss-cache
 
 Configure your Ruby on Rails development environment to let `rbenv` manage your ruby builds; 
 upstream are pretty good about keeping master RUBIES secure.  Note Heroku's use of [nginx is permanantly insecure].
@@ -294,7 +296,6 @@ Optional alternative commands for production system replication:
 
     systemctl restart mastodon-{web,sidekiq,streaming}.service
 
-<<<<<<< HEAD
 ## Miscellaneous admin tips for remote server mgmt:
 
 SSH remote key timeout OpenSSH>=7.2
