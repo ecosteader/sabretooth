@@ -1,206 +1,290 @@
-# Ecosteader's instance of Mastodon
 
-:important: Please don't use master branch, it is a mess. We integrate each update
-independently. 
 
-Current version is 3.1.4:  
+# Apache2 Configuration for Mastodon 
+## Return of the ECOSTEADER Mastodon
 
-    git clone git@github.com:indie/mastodon.git
-    git checkout ecosteader_v3.1.4
+REQUIRED:  Apache2 
 
-This fork of the `tootsuite/mastodon/` repo to continue the work that was started 
-with the original `indie/spacemin` RoR site ... development on this fork will likely 
-follow the Apache-friendly ways. Please help share ECOLOGICAL DEMOCRACY that may 
-someday heal the planet. 
+Set up your localhost environment to develop and backup your custom Mastodon instance. 
 
-Note: Anybody affiliated with Donald Trump's EVIL SALESFORCE IS NOT WELCOME HERE; 
-all of your malicious Heroku code will be deleted and your IPs will be banned from 
-the network.
+### IMPORTANT  
 
-## About Ecosteader
+    sudo apt remove nginx
+    sudo apt --purge remove nginx/
+    sudo apt --purge remove nginx
 
-Ecosteader is a network for builders, designers, and innovators of "green" or 
-eco-friendly habitats, gardens, homesteads, farms, artwork, and more. We share 
-ideas and inspirations with a friendly hippie environmentalist kinda vibe.
+## Get started
 
-Ecosteading is like homesteading, but it's meant to be done on a much smaller, 
-more humble, more efficient scale; unlike traditional homesteading, it can be 
-done with any amount of land or space -- in either urban and rural settings. 
-Ecosteading is also about acknowledging that humans are but one user of shared 
-soil. This philosophy is sometimes called Community Ecology.
+Configure your SSH on GitHub. This tutorial assumes you have already configured SSH keys with 
+your GitHub account. Then start your own branch so you can track your own changes. This guide 
+has been tested and works on Ubuntu 18.10 and Linux Mint 19.2, but your system may be different.
 
-[Get Started Decolonizing](https://github.com/indie/ecosteader/blob/master/START-Decolonize.pdf)
 
-Being an Ecosteader involves systems-level thinking. With the advent of AI and 
-technology, we know that smart systems require networking, and in order to best 
-take a systems-level approach, people need to network. But wait! We're not talking 
-about "networking" the traditional greed-driven ways that have driven the last 
-200 years of American real estate "development". 
+    git clone git@github.com:indie/mastodon.git 
+    cd mastodon && git checkout ecosteader_3.3 
+    git pull 
+    git checkout branch your_branch_name 
 
-Please read on...
+Install prerequisites
 
-## We are anti-Realtors, [anti-landlords](https://web.archive.org/web/20181115214908/https://www.reddit.com/r/LateStageCapitalism/comments/9xbic8/landlords_suck/), and against corrupt politicians.
+    sudo apt install autoconf bison build-essential zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev
 
-### Ecological Democracy begins locally
 
-Instead, we endorse owner-occupied ecosteads, with practical, simple, and 
-earth-friendly stewardship of lands including nature preservation areas, 
-habitat restoration areas, and America's public lands. We're supportive of 
-efforts in county-level infrastructure, where laws and shared community 
-vision and goals can be articulated and implemented by the residents and 
-voters themselves through democratic processes. We are also staunchly 
-anti-HOA; HOAs divert what would otherwise be publicly-accountable taxpayer 
-dollars into privately-managed coffers with no accountability, often forcing 
-residents to be governed under rules and bylaws that promote gerrymandering 
-and exclusionary zoning that is harmful to ecosystems (think golf courses 
-and walls). They also destroy community spirit.
+Configure your Ruby on Rails development environment to let `rbenv` manage your ruby builds; upstream 
+are pretty good about keeping master RUBIES secure.  Note Heroku's use of [nginx is permanantly insecure].
 
-This Mastodon instance run by Ecosteader & Company, a registered Public 
-Benefit with a non-profit mission: to raise awareness of the ecological 
-and economical benefits of ecosteading. We help people escape the slavery 
-of rent and work around the greedy actors in real estate by providing them 
-with tools, resources, and information they need to make their own contracts 
-and cut out corrupt middlemen.  
+    git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+    echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
 
-* REMEMBER:  ALL of Donald Trumps's guys are corrupt. 
-* REMEMBER:  Salesforce is also doing Trump's dirty work.
-<ul>
-   <li><a href="https://docs.google.com/spreadsheets/d/10jHTXVfmbwZ0hfdNHu_yuffKOnITL1Fs4zcI3qjyDTY">Insider dumping is one reason Salesforce === EvilCorp</a></li>
-   <li><a href="https://www.rollingstone.com/culture/culture-news/salesforce-sued-sex-trafficking-814814/">Facilitating sex trafficking is another </a></li>
-   <li><a href="https://www.mercurynews.com/2018/08/20/protesting-dreamforce-salesforce-faces-renewed-pressure-over-contract-with-border-patrol/">The Trump administration hired Salesforce to terrorize and kill children using the US Border Patrol</a></li>
-   <li><a href="https://www.reddit.com/r/rails/comments/b3p7aw/psa_heroku_is_not_rails">Heroku is Salesforce, not Rails. Heroku is EVIL middleware peddled by Salesforce.</a></li>
-   <li><a href="https://www.npr.org/2018/12/11/675923576/customs-border-and-protection-paid-a-firm-13-6-million-to-hire-recruits-it-hired">Accenture is a Salesforce SHELL COMPANY</a> wasting your taxpayer dollars.</li>
-  <li><a href="https://www.bizjournals.com/sanfrancisco/news/2019/04/16/no-federal-taxes-paid-by-these-three-bay-area.html">Salesforce CEO and Hypocrite-of-the-Century Marc Benioff only wants people to think he cares about homelessness; the money he "donates" to "homeless causes" are actually used to perpetuate tax fraud of his shell companies</a>
-</ul>
+Configure for rbenv to load automatically, and check with `type rbenv`:
 
+    echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+    source ~/.bashrc
+    type rbenv
 
-## Useful links to free resources
+Now build the plugins directory
+    
+    git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+    rbenv install -l
+    rbenv install 2.6.5
+    rbenv global 2.6.5
+    cd mastodon
+    gem install bundler:2.1.2
 
-INFOGRAPHIC on how to sell anything with a title FSBO (use the link below 
-for free templates!)
+Note that if you are not creating a development environment, and instead are building 
+directly on the prod server, you might also want to add the `RUBY_CONFIGURE_OPTS=--with-jemalloc rbenv install 2.6.5` 
+as the jemalloc can help reduce memory usage on production systems. 
+    
+The next dependencies we add are for SSL: 
 
-* **Free Documents for FSBO or FLAT FEE ONLY** (Download odt and pdfs)[https://github.com/indie/ecosteader]
+    sudo apt install -y libssl-dev libyaml-dev libreadline6-dev
 
-* **Don't get scammed by Realtors** It's NEVER a good idea invite a Realtor 
-  or realty brokerage affiliate to your property. An agent that tells you 
-  any forms or terms on a contract are "standard" or "not negotiable" -- 
-  *especially* the usage of a percent as a commission -- can and should be 
-  sued for coercion! Remember: it's YOU hiring THEM, not the other way 
-  around.  See also: https://old.reddit.com/r/RealtorsSuck/
+Get your postgres going; here we also add a client lib. Then you can log-in and check that it 
+works; as per standard postgres, use `\q` to exit.
+    
+    sudo apt install postgresql postgresql-contrib libpq-dev
+    sudo -u postgres psql
+    psql (10.8 (Ubuntu 10.8-0ubuntu0.18.10.1))
+     Type "help" for help.
 
-* Another archived backup of the original version of Ecosteader: 
+     postgres=# \q
 
-* Cohousing Directory with lots of eco-villages: https://www.cohousing.org/directory
+Time to install the _GNU IDN library_ developer package; this belongs at a system location, where 
+it can do the most good. 
 
+     sudo apt install libidn11-dev
 
-https://web.archive.org/web/20190422210620/ecosteader.com/about
+Finally are we ready to run `bundle install`. Be sure you're at the root of the cloned `mastodon` directory, and on 
+your own branch. If you followed ths guide on a true Linux system, you should see SUCCESS: 
 
-<img src="https://www.ecosteader.com/LinodeMurderedEcosteaderTwice.png" align="center" width="90%" hover="Linode murdered Ecosteader twice" />
+    bundle update --bundler
+    bundle install
 
-https://www.ecosteader.com/LinodeMurderedEcosteaderTwice.png
+Success!  
 
+     Bundle complete! 117 Gemfile dependencies, 269 gems now installed.
+     Use `bundle info [gemname]` to see where a bundled gem is installed.
+     
 
-Relevant README FROM `TOOTSUITE/MASTODON`: 
+Remove default system yarn, if any (it's probably old; you can check the date as follows) 
 
+     ls -al /usr/bin/yarn 
+     -rwxr-xr-x 1 root root 20734 Feb 23  2018
+     rm -rf /usr/bin/yarn
 
-## Contributing
+Install yarn via npm, and symbolically link to default 
 
-Mastodon is **free, open source software** 
-licensed under **AGPLv3**.
+    npm install -g yarn
+    sudo ln -s /usr/local/bin/yarn /usr/bin/yarn
 
+Finally, confirm you have a recent version  
+ 
+To build a local development environment that actually runs Mastodon like it will be on a production server, a user named `mastodon` needs to exist; let's set that up with your postgres:
 
+     $ sudo -u postgres psql
+     psql (10.8 (Ubuntu 10.8-0ubuntu0.18.10.1))
+     Type "help" for help.
 
-![Mastodon](https://i.imgur.com/NhZc40l.png)
-========
+     postgres=# CREATE USER mastodon CREATEDB;
+     CREATE ROLE
+     postgres=# \q
+ 
+The good news is that now we have all the basics ready to start running an _informational_ Mastodon 
+instance. You can start building a custom theme around your topic-based content and have all the 
+pieces in place so that when you're ready to start collaborating with other like-minded instances or 
+users, it should be fairly straightforward.
 
-[![GitHub release](https://img.shields.io/github/release/tootsuite/mastodon.svg)][releases]
-[![Build Status](https://img.shields.io/circleci/project/github/tootsuite/mastodon.svg)][circleci]
-[![Code Climate](https://img.shields.io/codeclimate/maintainability/tootsuite/mastodon.svg)][code_climate]
-[![Translation status](https://weblate.joinmastodon.org/widgets/mastodon/-/svg-badge.svg)][weblate]
-[![Crowdin](https://d322cqt584bo4o.cloudfront.net/mastodon/localized.svg)][crowdin]
-[releases]: https://github.com/tootsuite/mastodon/releases
-[circleci]: https://circleci.com/gh/tootsuite/mastodon
-[code_climate]: https://codeclimate.com/github/tootsuite/mastodon
-[weblate]: https://weblate.joinmastodon.org/engage/mastodon/
-[crowdin]: https://crowdin.com/project/mastodon
+## Options for "streaming" APIs
 
-Mastodon is a **free, open-source social network server** based on ActivityPub where users can follow friends and discover new ones. On Mastodon, users can publish anything they want: links, pictures, text, video. All Mastodon servers are interoperable as a federated network (users on one server can seamlessly communicate with users from another one, including non-Mastodon software that implements ActivityPub)!
+The next step is to get the high-level "streaming" APIs configured, and this can go many ways. If you 
+find yourself getting stuck after following some overly complex "instruction", it's usually better 
+to start removing Gems, rather than adding. It's always a good idea to watch out for code bloat 
+and third-party things that are not clear on what they are doing to your system. There are many 
+malicious actors that want to destroy what we're building; don't let them! 
 
-Click below to **learn more** in a video:
 
-[![Screenshot](https://blog.joinmastodon.org/2018/06/why-activitypub-is-the-future/ezgif-2-60f1b00403.gif)][youtube_demo]
+### NodeJS & Yarn vs RageQuit
 
-[youtube_demo]: https://www.youtube.com/watch?v=IPSbNdBmWKE
+This is where things can get tricky. 
 
-## Navigation
+The long and short of this is: some webhosts, like AWS or Heroku, absolutely want you to push 
+traffic through bottlenecks they can slow down; this is how they make money or attempt to "justify" 
+putting your site on some sort of convoluted metered system (Linode's switch to "hourly" 
+billing that destroyed Ecosteader's original Mastodon instance, for example). Heroku actually 
+steals your data! It can be especially dangerous when those same webhosts actually target their 
+own customers with malware and bots that throttle the true content of an instance as a means to 
+exploit a customer's thriftiness.
 
-- [Project homepage 🐘](https://joinmastodon.org)
-- [Support the development via Patreon][patreon]
-- [View sponsors](https://joinmastodon.org/sponsors)
-- [Blog](https://blog.joinmastodon.org)
-- [Documentation](https://docs.joinmastodon.org)
-- [Browse Mastodon servers](https://joinmastodon.org/#getting-started)
-- [Browse Mastodon apps](https://joinmastodon.org/apps)
+[RageQuit] (recently renamed) is another option to modify the default NGINX 
+frontend configs for Mastodon streaming; it calls itself "A WIP blazingly fast drop-in replacement 
+for the Mastodon streaming api server."
 
-[patreon]: https://www.patreon.com/mastodon
 
-## Features
+### The good news
 
-<img src="https://docs.joinmastodon.org/elephant.svg" align="right" width="30%" />
+Since we're running an Apache2 (2.4.18) frontend that has been thoroughly tested and "works", the 
+good news is that we have plenty of options that don't involve noisy Nginx. The NodeJS/Yarn config 
+**will** work with a few minor adjustments to the `tootsuite/mastodon` default code as long as we 
+don't implement anything on the NGINX side. We won't dig too much into those changes, but they are 
+readily available in the `ecosteaderfx_2.8_master` repo, which you should already have cloned to 
+your development machine.
 
-**No vendor lock-in: Fully interoperable with any conforming platform**
+Backup your production (copy) scripts and code: 
 
-It doesn't have to be Mastodon, whatever implements ActivityPub is part of the social network! [Learn more](https://blog.joinmastodon.org/2018/06/why-activitypub-is-the-future/)
+    pg_dump -Fc -U postgres mastodon_production > db_dec22_2019.dump
 
-**Real-time, chronological timeline updates**
 
-See the updates of people you're following appear in real-time in the UI via WebSockets. There's a firehose view as well!
+## Prepare environment for streaming
 
-**Media attachments like images and short videos**
+This guide explains how to build a streaming API manager on your `localhost`, so you can easily 
+adjust configs (or delete default configs) on a remote production or test mirror.
 
-Upload and view images and WebM/MP4 videos attached to the updates. Videos with no audio track are treated like GIFs; normal videos are looped - like vines!
+Install Redis
 
-**Safety and moderation tools**
+    sudo apt install redis-server redis-tools
 
-Private posts, locked accounts, phrase filtering, muting, blocking and all sorts of other features, along with a reporting and moderation system. [Learn more](https://blog.joinmastodon.org/2018/07/cage-the-mastodon/)
+Check your version of node ([node install directions] not included)
 
-**OAuth2 and a straightforward REST API**
+    node --version 
+    v12.16.3
 
-Mastodon acts as an OAuth2 provider so 3rd party apps can use the REST and Streaming APIs, resulting in a rich app ecosystem with a lot of choices!
+Install the at least the minimum required [version of nodejs]
 
-## Deployment
+    nodejs --version
+    v14.2.0
 
-**Tech stack:**
+   
+To set-up a new database 
 
-- **Ruby on Rails** powers the REST API and other web pages
-- **React.js** and Redux are used for the dynamic parts of the interface
-- **Node.js** powers the streaming API
+    bundle exec rails db:setup
 
-**Requirements:**
+OR To restore an old or "backup" database locally, first create a place for it to be restored in postgres:
 
-- **PostgreSQL** 9.5+
-- **Redis** 4+
-- **Ruby** 2.5+
-- **Node.js** 10.13+
+     sudo -u postgres psql
+     psql (10.8 (Ubuntu 10.8-0ubuntu0.18.10.1))
+     Type "help" for help.
 
- The [**stand-alone** installation guide](https://docs.joinmastodon.org/administration/installation/) is available in the documentation.
+     postgres=# create database mastodon_development with owner mastodon;
+     CREATE DATABASE
+     postgres=# \q
 
-A **Vagrant** configuration is included for development purposes.
+Then run `pg_restore` 
 
-## Contributing
+    sudo -u postgres pg_restore -U postgres -d mastodon_development -v /backups/backup_18May2021.dump
+    bin/rails db:schema:load RAILS_ENV=development  #may be needed depending on your configs
+    bin/rails db:migrate RAILS_ENV=development
 
-Mastodon is **free, open-source software** licensed under **AGPLv3**.
+Optional alternative commands for production system replication:
 
-You can open issues for bugs you've found or features you think are missing. You can also submit pull requests to this repository, or submit translations using Crowdin. To get started, take a look at [CONTRIBUTING.md](CONTRIBUTING.md). If your contributions are accepted into Mastodon, you can request to be paid through [our OpenCollective](https://opencollective.com/mastodon).
+    bundle install
+    yarn install --pure-lockfile --ignore-optional
+    RAILS_ENV=production bundle exec rails assets:precompile #Omit the RAILS_ENV if you are building locally
+    RAILS_ENV=production bundle exec rails db:migrate  #Omit the RAILS_ENV if you are building locally
+    rails s  #For local testing
+    
+    
+-----------------    
+    
+ (Additional notes on UPGRADING PostGRES including some .jp-friendly help):  
+ 
+    dpkg -l | grep postgresql
 
-**IRC channel**: #mastodon on irc.freenode.net
+#Mastodon を止める
 
-## License
+    systemctl stop mastodon-{web,sidekiq,streaming}.service
 
-Copyright (C) 2016-2020 Eugen Rochko & other Mastodon contributors (see [AUTHORS.md](AUTHORS.md))
+#まず PostgreSQL のリポジトリを追加して、アップデートする
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main"
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+    sudo apt update
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+#今回は PostgreSQL 10 にするのでバージョンを指定してインストール
 
-You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+    sudo apt install postgresql-10 postgresql-client-10 postgresql-contrib-10`
+
+
+#インストールされたか確認、下記をすると今インストールされているものが出る
+
+    dpkg -l | grep postgresql`
+
+
+#下記のような表示で、両方入った状態が確認できるはず
+
+    postgresql
+    postgresql-9.5
+    postgresql-10
+    postgresql-client-9.5
+    postgresql-client-10
+    postgresql-client-common
+    postgresql-common
+    postgresql-contrib
+    postgresql-contrib-9.5```
+
+#確認したら下記をしてクラスタを確認
+
+    pg_lsclusters`
+
+#下記のように 2 つの PostgreSQL が見えるはず
+
+    Ver Cluster Port Status Owner    Data directory               Log file
+    9.5 main    5432 online postgres /var/lib/postgresql/9.5/main /var/log/postgresql/postgresql-9.5-main.log
+    10  main    5433 online postgres /var/lib/postgresql/10/main /var/log/postgresql/postgresql-10-main.log```
+
+#このときは 10 の接続先が 5433 になっていて、まだ 9.5 が通常ポートの 5432 につながった状態
+
+#次にインストール先の 10 を止めて、PostgreSQL もとめてアップグレード開始
+
+    sudo pg_dropcluster 10 main --stop
+    sudo service postgresql stop
+    sudo pg_upgradecluster 9.5 main
+
+
+#何もエラーが出なければ DB の移行がはじまる。まあまあ時間かかる。(うちではエラーでなかったのでどんなエラー出るかはわかりません)
+
+#終わったら再度確認  `pg_lsclusters`
+
+#すると 10 のほうがポートが 5432 になっているはず
+    
+    Ver Cluster Port Status  Owner    Data directory               Log file
+    9.5 main    5433 offline postgres /var/lib/postgresql/9.5/main /var/log/postgresql/postgresql-9.5-main.log
+    10  main    5432 offline postgres /var/lib/postgresql/10/main /var/log/postgresql/postgresql-10-main.log```
+
+#PostgreSQL を再起動してバージョンが 10 になっているか確認
+
+    sudo service postgresql restart
+    psql --version
+
+#9.5 を削除
+
+    sudo pg_dropcluster 9.5 main`
+
+#最後に Mastodon をリスタート
+
+    systemctl restart mastodon-{web,sidekiq,streaming}.service`
+
+
+[node install directions]: https://github.com/nodejs/node/blob/master/BUILDING.md
+[version of nodejs]: https://github.com/nodesource/distributions#installation-instructions
+[nginx is permanantly insecure]:https://www.zdnet.com/article/russian-police-raid-nginx-moscow-office/
+[RageQuit]:https://github.com/tootsuite/ragequit
