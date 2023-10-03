@@ -70,7 +70,7 @@
 
             .hero-widget__counters__wrapper
               .hero-widget__counter
-                %strong= number_to_human @instance_presenter.user_count, strip_insignificant_zeros: true
+                %strong= number_to_human @instance_presenter.user_count, strip_insignificant_zeros: false
                 %span= t 'about.user_count_after', count: @instance_presenter.user_count
               .hero-widget__counter
                 %strong= number_to_human @instance_presenter.active_user_count, strip_insignificant_zeros: true

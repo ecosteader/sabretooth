@@ -21,7 +21,7 @@ $small-breakpoint: 960px;
   font-weight: 400;
   line-height: 1.7;
   word-wrap: break-word;
-  color: $darker-text-color;
+  color: $lighter-text-color;
 
   a {
     color: $highlight-text-color;
@@ -36,12 +36,13 @@ $small-breakpoint: 960px;
 
   p,
   li {
-    color: $darker-text-color;
+    color: $lighter-text-color;
   }
 
   p {
     margin-top: 0;
     margin-bottom: .85em;
+    
 
     &:last-child {
       margin-bottom: 0;
@@ -60,7 +61,7 @@ $small-breakpoint: 960px;
 
   code {
     font-size: 0.85em;
-    background: darken($ui-base-color, 8%);
+    background: darken($ui-base-color, 4%);
     border-radius: 4px;
     padding: 0.2em 0.3em;
   }

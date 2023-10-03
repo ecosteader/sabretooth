@@ -1,17 +1,24 @@
 # frozen_string_literal: true
+#
+# add topline as 'module Rails' if removing last dir active_record
 
-require 'rails/generators'
 
-module Rails
-  class PostDeploymentMigrationGenerator < Rails::Generators::NamedBase
-    def create_migration_file
-      timestamp = Time.zone.now.strftime('%Y%m%d%H%M%S')
+require 'rails/generators/active_record'
 
-      template 'migration.rb', "db/post_migrate/#{timestamp}_#{file_name}.rb"
-    end
+class PostDeploymentMigrationGenerator < Rails::Generators::NamedBase
+  source_root File.expand_path('templates', __dir__)
+
+  include Rails::Generators::Migration
+
+  def create_post_deployment_migration
+    migration_template 'migration.erb', "db/post_migrate/#{file_name}.rb"
+  end
 
     def migration_class_name
       file_name.camelize
     end
+
+  def self.next_migration_number(path)
+    ActiveRecord::Generators::Base.next_migration_number(path)
   end
 end
