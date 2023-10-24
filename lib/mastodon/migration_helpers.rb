@@ -37,46 +37,41 @@
 
 # This is bad form, but there are enough differences that it's impractical to do
 # otherwise:
-# rubocop:disable all
 
 module Mastodon
   module MigrationHelpers
-    # Stub for Database.postgresql? from GitLab
-    def self.postgresql?
-      ActiveRecord::Base.configurations[Rails.env]['adapter'].casecmp('postgresql').zero?
-    end
+    class CorruptionError < StandardError
+      attr_reader :index_name
 
-    # Stub for Database.mysql? from GitLab
-    def self.mysql?
-      ActiveRecord::Base.configurations[Rails.env]['adapter'].casecmp('mysql2').zero?
+      def initialize(index_name)
+        @index_name = index_name
+
+        super "The index `#{index_name}` seems to be corrupted, it contains duplicate rows. " \
+          'For information on how to fix this, see our documentation: ' \
+          'https://docs.joinmastodon.org/admin/troubleshooting/index-corruption/'
+      end
+
+      def cause
+        nil
+      end
+
+      def backtrace
+        []
+      end
     end
 
     # Model that can be used for querying permissions of a SQL user.
     class Grant < ActiveRecord::Base
-      self.table_name =
-        if Mastodon::MigrationHelpers.postgresql?
-          'information_schema.role_table_grants'
-        else
-          'mysql.user'
-        end
+      self.table_name = 'information_schema.role_table_grants'
 
       def self.scope_to_current_user
-        if Mastodon::MigrationHelpers.postgresql?
-          where('grantee = user')
-        else
-          where("CONCAT(User, '@', Host) = current_user()")
-        end
+        where('grantee = user')
       end
 
       # Returns true if the current user can create and execute triggers on the
       # given table.
       def self.create_and_execute_trigger?(table)
-        priv =
-          if Mastodon::MigrationHelpers.postgresql?
-            where(privilege_type: 'TRIGGER', table_name: table)
-          else
-            where(Trigger_priv: 'Y')
-          end
+        priv = where(privilege_type: 'TRIGGER', table_name: table)
 
         priv.scope_to_current_user.any?
       end
@@ -119,7 +114,7 @@ module Mastodon
             allow_null: options[:null]
           )
         else
-          add_column(table_name, column_name, :datetime_with_timezone, options)
+          add_column(table_name, column_name, :datetime_with_timezone, **options)
         end
       end
     end
@@ -141,12 +136,10 @@ module Mastodon
           'in the body of your migration class'
       end
 
-      if MigrationHelpers.postgresql?
-        options = options.merge({ algorithm: :concurrently })
-        disable_statement_timeout
-      end
+      options = options.merge({ algorithm: :concurrently })
+      disable_statement_timeout
 
-      add_index(table_name, column_name, options)
+      add_index(table_name, column_name, **options)
     end
 
     # Removes an existed index, concurrently when supported
@@ -170,7 +163,7 @@ module Mastodon
         disable_statement_timeout
       end
 
-      remove_index(table_name, options.merge({ column: column_name }))
+      remove_index(table_name, **options.merge({ column: column_name }))
     end
 
     # Removes an existing index, concurrently when supported
@@ -194,16 +187,21 @@ module Mastodon
         disable_statement_timeout
       end
 
-      remove_index(table_name, options.merge({ name: index_name }))
+      remove_index(table_name, **options.merge({ name: index_name }))
     end
 
     # Only available on Postgresql >= 9.2
     def supports_drop_index_concurrently?
-      return false unless MigrationHelpers.postgresql?
-
       version = select_one("SELECT current_setting('server_version_num') AS v")['v'].to_i
 
-      version >= 90200
+      version >= 90_200
+    end
+
+    # Only available on Postgresql >= 11
+    def supports_add_column_with_default?
+      version = select_one("SELECT current_setting('server_version_num') AS v")['v'].to_i
+
+      version >= 110_000
     end
 
     # Adds a foreign key with only minimal locking on the tables involved.
@@ -226,13 +224,7 @@ module Mastodon
       # While MySQL does allow disabling of foreign keys it has no equivalent
       # of PostgreSQL's "VALIDATE CONSTRAINT". As a result we'll just fall
       # back to the normal foreign key procedure.
-      if MigrationHelpers.mysql?
-        return add_foreign_key(source, target,
-                               column: column,
-                               on_delete: on_delete)
-      else
-        on_delete = 'SET NULL' if on_delete == :nullify
-      end
+      on_delete = 'SET NULL' if on_delete == :nullify
 
       disable_statement_timeout
 
@@ -270,7 +262,7 @@ module Mastodon
     # the database. Disable the session's statement timeout to ensure
     # migrations don't get killed prematurely. (PostgreSQL only)
     def disable_statement_timeout
-      execute('SET statement_timeout TO 0') if MigrationHelpers.postgresql?
+      execute('SET statement_timeout TO 0')
     end
 
     # Updates the value of a column in batches.
@@ -303,8 +295,6 @@ module Mastodon
     # determines this method to be too complex while there's no way to make it
     # less "complex" without introducing extra methods (which actually will
     # make things _more_ complex).
-    #
-    # rubocop: disable Metrics/AbcSize
     def update_column_in_batches(table_name, column, value)
       if transaction_open?
         raise 'update_column_in_batches can not be run inside a transaction, ' \
@@ -315,11 +305,11 @@ module Mastodon
       table = Arel::Table.new(table_name)
 
       total = estimate_rows_in_table(table_name).to_i
-      if total == 0
+      if total < 1
         count_arel = table.project(Arel.star.count.as('count'))
         count_arel = yield table, count_arel if block_given?
 
-        total = exec_query(count_arel.to_sql).to_hash.first['count'].to_i
+        total = exec_query(count_arel.to_sql).to_ary.first['count'].to_i
 
         return if total == 0
       end
@@ -335,7 +325,7 @@ module Mastodon
 
       start_arel = table.project(table[:id]).order(table[:id].asc).take(1)
       start_arel = yield table, start_arel if block_given?
-      first_row = exec_query(start_arel.to_sql).to_hash.first
+      first_row = exec_query(start_arel.to_sql).to_ary.first
       # In case there are no rows but we didn't catch it in the estimated size:
       return unless first_row
       start_id = first_row['id'].to_i
@@ -356,7 +346,7 @@ module Mastodon
             .skip(batch_size)
 
           stop_arel = yield table, stop_arel if block_given?
-          stop_row = exec_query(stop_arel.to_sql).to_hash.first
+          stop_row = exec_query(stop_arel.to_sql).to_ary.first
 
           update_arel = Arel::UpdateManager.new
             .table(table)
@@ -430,6 +420,11 @@ module Mastodon
     # This method can also take a block which is passed directly to the
     # `update_column_in_batches` method.
     def add_column_with_default(table, column, type, default:, limit: nil, allow_null: false, &block)
+      if supports_add_column_with_default?
+        add_column(table, column, type, default: default, limit: limit, null: allow_null)
+        return
+      end
+
       if transaction_open?
         raise 'add_column_with_default can not be run inside a transaction, ' \
           'you can disable transactions by calling disable_ddl_transaction! ' \
@@ -487,11 +482,7 @@ module Mastodon
       # If we were in the middle of update_column_in_batches, we should remove
       # the old column and start over, as we have no idea where we were.
       if column_for(table, new)
-        if MigrationHelpers.postgresql?
-          remove_rename_triggers_for_postgresql(table, trigger_name)
-        else
-          remove_rename_triggers_for_mysql(trigger_name)
-        end
+        remove_rename_triggers_for_postgresql(table, trigger_name)
 
         remove_column(table, new)
       end
@@ -510,7 +501,7 @@ module Mastodon
         col_opts[:limit] = old_col.limit
       end
 
-      add_column(table, new, new_type, col_opts)
+      add_column(table, new, new_type, **col_opts)
 
       # We set the default value _after_ adding the column so we don't end up
       # updating any existing data with the default value. This isn't
@@ -521,13 +512,8 @@ module Mastodon
       quoted_old = quote_column_name(old)
       quoted_new = quote_column_name(new)
 
-      if MigrationHelpers.postgresql?
-        install_rename_triggers_for_postgresql(trigger_name, quoted_table,
-                                               quoted_old, quoted_new)
-      else
-        install_rename_triggers_for_mysql(trigger_name, quoted_table,
-                                          quoted_old, quoted_new)
-      end
+      install_rename_triggers_for_postgresql(trigger_name, quoted_table,
+                                             quoted_old, quoted_new)
 
       update_column_in_batches(table, new, Arel::Table.new(table)[old])
 
@@ -553,10 +539,10 @@ module Mastodon
         new_pk_index_name = "index_#{table}_on_#{column}_cm"
 
         unless indexes_for(table, column).find{|i| i.name == old_pk_index_name}
-          add_concurrent_index(table, [temp_column], {
+          add_concurrent_index(table, [temp_column],
             unique: true,
             name: new_pk_index_name
-          })
+          )
         end
       end
     end
@@ -596,7 +582,7 @@ module Mastodon
             o.conname as name,
             o.confdeltype as on_delete
           from pg_constraint o
-          left join pg_class f on f.oid = o.confrelid 
+          left join pg_class f on f.oid = o.confrelid
           left join pg_class c on c.oid = o.conrelid
           left join pg_class m on m.oid = o.conrelid
           where o.contype = 'f'
@@ -685,11 +671,7 @@ module Mastodon
 
       check_trigger_permissions!(table)
 
-      if MigrationHelpers.postgresql?
-        remove_rename_triggers_for_postgresql(table, trigger_name)
-      else
-        remove_rename_triggers_for_mysql(trigger_name)
-      end
+      remove_rename_triggers_for_postgresql(table, trigger_name)
 
       remove_column(table, old)
     end
@@ -810,7 +792,7 @@ module Mastodon
         options[:using] = index.using if index.using
         options[:where] = index.where if index.where
 
-        add_concurrent_index(table, new_columns, options)
+        add_concurrent_index(table, new_columns, **options)
       end
     end
 
@@ -835,6 +817,27 @@ module Mastodon
       columns(table).find { |column| column.name == name }
     end
 
+    # Update the configuration of an index by creating a new one and then
+    # removing the old one
+    def update_index(table_name, index_name, columns, **index_options)
+      if index_name_exists?(table_name, "#{index_name}_new") && index_name_exists?(table_name, index_name)
+        remove_index table_name, name: "#{index_name}_new"
+      elsif index_name_exists?(table_name, "#{index_name}_new")
+        # Very unlikely case where the script has been interrupted during/after removal but before renaming
+        rename_index table_name, "#{index_name}_new", index_name
+      end
+
+      begin
+        add_index table_name, columns, **index_options.merge(name: "#{index_name}_new", algorithm: :concurrently)
+      rescue ActiveRecord::RecordNotUnique
+        remove_index table_name, name: "#{index_name}_new"
+        raise CorruptionError.new(index_name)
+      end
+
+      remove_index table_name, name: index_name if index_name_exists?(table_name, index_name)
+      rename_index table_name, "#{index_name}_new", index_name
+    end
+
     # This will replace the first occurrence of a string in a column with
     # the replacement
     # On postgresql we can use `regexp_replace` for that.
@@ -844,18 +847,9 @@ module Mastodon
       quoted_pattern = Arel::Nodes::Quoted.new(pattern.to_s)
       quoted_replacement = Arel::Nodes::Quoted.new(replacement.to_s)
 
-      if MigrationHelpers.mysql?
-        locate = Arel::Nodes::NamedFunction
-          .new('locate', [quoted_pattern, column])
-        insert_in_place = Arel::Nodes::NamedFunction
-          .new('insert', [column, locate, pattern.size, quoted_replacement])
-
-        Arel::Nodes::SqlLiteral.new(insert_in_place.to_sql)
-      else
-        replace = Arel::Nodes::NamedFunction
-          .new("regexp_replace", [column, quoted_pattern, quoted_replacement])
-        Arel::Nodes::SqlLiteral.new(replace.to_sql)
-      end
+      replace = Arel::Nodes::NamedFunction
+        .new("regexp_replace", [column, quoted_pattern, quoted_replacement])
+      Arel::Nodes::SqlLiteral.new(replace.to_sql)
     end
 
     def remove_foreign_key_without_error(*args)
@@ -995,4 +989,3 @@ into similar problems in the future (e.g. when new tables are created).
   end
 end
 
-# rubocop:enable all

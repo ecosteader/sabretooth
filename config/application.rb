@@ -38,13 +38,14 @@ require_relative '../lib/terrapin/multi_pipe_extensions'
 require_relative '../lib/mastodon/snowflake'
 require_relative '../lib/mastodon/version'
 require_relative '../lib/mastodon/rack_middleware'
+#require_relative 'tokenizer'
 require_relative '../lib/public_file_server_middleware'
 require_relative '../lib/devise/two_factor_ldap_authenticatable'
 require_relative '../lib/devise/two_factor_pam_authenticatable'
 require_relative '../lib/chewy/settings_extensions'
 require_relative '../lib/chewy/index_extensions'
 require_relative '../lib/chewy/strategy/mastodon'
-require_relative '../lib/chewy/strategy/bypass_with_warning'
+#require_relative '../lib/chewy/strategy/bypass_with_warning'
 require_relative '../lib/webpacker/manifest_extensions'
 require_relative '../lib/webpacker/helper_extensions'
 require_relative '../lib/rails/engine_extensions'
@@ -62,15 +63,20 @@ require_relative '../lib/mastodon/redis_config'
 module Mastodon
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.0
+    #config.load_defaults 7.0
+     config.load_defaults 6.1
+    # config.load_defaults 6.0
+    # config.autoloader = :zeitwerk
+    # config.load_defaults 5.2
+    # config.autoloader = :zeitwerk
 
     # TODO: Release a version which uses the 7.0 defaults as specified above,
     # but preserves the 6.1 cache format as set below. In a subsequent change,
     # remove this line setting to 6.1 cache format, and then release another version.
     # https://guides.rubyonrails.org/upgrading_ruby_on_rails.html#new-activesupport-cache-serialization-format
     # https://github.com/mastodon/mastodon/pull/24241#discussion_r1162890242
-    config.active_support.cache_format_version = 6.1
-
+    # config.active_support.cache_format_version = 6.0
+    config.active_record.cache_versioning = false
     config.add_autoload_paths_to_load_path = false
 
     # Settings in config/environments/* take precedence over those specified here.
@@ -102,7 +108,6 @@ module Mastodon
       :de,
       :el,
       :en,
-      :'en-GB',
       :eo,
       :es,
       :'es-AR',
@@ -113,7 +118,6 @@ module Mastodon
       :fi,
       :fo,
       :fr,
-      :'fr-QC',
       :fy,
       :ga,
       :gd,
@@ -126,6 +130,7 @@ module Mastodon
       :id,
       :ig,
       :io,
+      :ike,
       :is,
       :it,
       :ja,
@@ -146,12 +151,12 @@ module Mastodon
       :my,
       :nl,
       :nn,
+      :nv,
       :no,
       :oc,
       :pa,
       :pl,
-      :'pt-BR',
-      :'pt-PT',
+      :pt,
       :ro,
       :ru,
       :sa,
@@ -190,8 +195,16 @@ module Mastodon
       end
     end
 
-    # config.paths.add File.join('app', 'api'), glob: File.join('**', '*.rb')
-    # config.autoload_paths += Dir[Rails.root.join('app', 'api', '*')]
+    
+     if ENV['DISABLE_CACHE'] == 'true'
+        config.cache_store = :null_store
+            
+     else
+        config.cache_store = :redis_store, 'redis://localhost:6379/0/cache', { expires_in: 1.hour }
+    end  
+
+   # config.autoload_paths += Dir[Rails.root.join('app', 'api', '*')]REDIS_URL = "redis://localhost:6379/?family=6"
+    config.paths.add File.join('app', 'api'), glob: File.join('**', '*.rb')
 
     config.active_job.queue_adapter = :sidekiq
 
@@ -205,11 +218,15 @@ module Mastodon
     config.middleware.use Rack::Attack
     config.middleware.use Mastodon::RackMiddleware
 
+    #initializer :deprecator do |app|
+     # app.deprecators[:mastodon] = ActiveSupport::Deprecation.new('4.3', 'mastodon/mastodon')
+    #end
+
     config.to_prepare do
       Doorkeeper::AuthorizationsController.layout 'modal'
       Doorkeeper::AuthorizedApplicationsController.layout 'admin'
-      Doorkeeper::Application.include ApplicationExtension
-      Doorkeeper::AccessToken.include AccessTokenExtension
+      # Doorkeeper::Application.include ApplicationExtension
+      # Doorkeeper::AccessToken.include AccessTokenExtension
       Devise::FailureApp.include AbstractController::Callbacks
       Devise::FailureApp.include Localized
     end
