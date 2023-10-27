@@ -4,24 +4,21 @@ class FollowerAccountsController < ApplicationController
   include AccountControllerConcern
   include SignatureVerification
 
-  before_action :require_signature!, if: -> { request.format == :json && authorized_fetch_mode? }
-  before_action :set_cache_headers
+  vary_by -> { public_fetch_mode? ? 'Accept, Accept-Language, Cookie' : 'Accept, Accept-Language, Cookie, Signature' }
+
+  before_action :require_account_signature!, if: -> { request.format == :json && authorized_fetch_mode? }
 
   skip_around_action :set_locale, if: -> { request.format == :json }
-  skip_before_action :require_functional!
+  skip_before_action :require_functional!, unless: :limited_federation_mode?
 
   def index
     respond_to do |format|
       format.html do
-        expires_in 0, public: true unless user_signed_in?
-
-        next if @account.user_hides_network?
-
-        follows
+        expires_in(15.seconds, public: true, stale_while_revalidate: 30.seconds, stale_if_error: 1.hour) unless user_signed_in?
       end
 
       format.json do
-        raise Mastodon::NotPermittedError if page_requested? && @account.user_hides_network?
+        raise Mastodon::NotPermittedError if page_requested? && @account.hide_collections?
 
         expires_in(page_requested? ? 0 : 3.minutes, public: public_fetch_mode?)
 
@@ -52,16 +49,24 @@ class FollowerAccountsController < ApplicationController
     account_followers_url(@account, page: page) unless page.nil?
   end
 
+  def next_page_url
+    page_url(follows.next_page) if follows.respond_to?(:next_page)
+  end
+
+  def prev_page_url
+    page_url(follows.prev_page) if follows.respond_to?(:prev_page)
+  end
+
   def collection_presenter
     if page_requested?
       ActivityPub::CollectionPresenter.new(
         id: account_followers_url(@account, page: params.fetch(:page, 1)),
         type: :ordered,
         size: @account.followers_count,
-        items: follows.map { |f| ActivityPub::TagManager.instance.uri_for(f.account) },
+        items: follows.map { |follow| ActivityPub::TagManager.instance.uri_for(follow.account) },
         part_of: account_followers_url(@account),
-        next: page_url(follows.next_page),
-        prev: page_url(follows.prev_page)
+        next: next_page_url,
+        prev: prev_page_url
       )
     else
       ActivityPub::CollectionPresenter.new(
@@ -74,10 +79,10 @@ class FollowerAccountsController < ApplicationController
   end
 
   def restrict_fields_to
-    if page_requested? || !@account.user_hides_network?
+    if page_requested? || !@account.hide_collections?
       # Return all fields
     else
-      %i(id type totalItems)
+      %i(id type total_items)
     end
   end
 end

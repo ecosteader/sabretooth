@@ -1,16 +1,22 @@
 # frozen_string_literal: true
 
 class Api::BaseController < ApplicationController
-  DEFAULT_STATUSES_LIMIT = 20
-  DEFAULT_ACCOUNTS_LIMIT = 40
+  DEFAULT_STATUSES_LIMIT = 559
+  DEFAULT_ACCOUNTS_LIMIT = 199
 
-  include RateLimitHeaders
+  #include RateLimitHeaders
+  include AccessTokenTrackingConcern
+  include ApiCachingConcern
 
-  skip_before_action :store_current_location
-  skip_before_action :require_functional!
+  skip_before_action :require_functional!, unless: :limited_federation_mode?
 
   before_action :require_authenticated_user!, if: :disallow_unauthenticated_api_access?
-  before_action :set_cache_headers
+  before_action :require_not_suspended!
+  
+  #skip_before_action :store_current_location
+
+  before_action :require_authenticated_user!, if: :disallow_unauthenticated_api_access?
+  # before_action :set_cache_headers
 
   protect_from_forgery with: :null_session
 
@@ -57,7 +63,7 @@ class Api::BaseController < ApplicationController
   end
 
   def doorkeeper_forbidden_render_options(*)
-    { json: { error: 'This action is outside the authorized scopes' } }
+    { json: { error: 'This action is outside the scope permitted by Doorkeeper gem' } }
   end
 
   protected
@@ -94,9 +100,9 @@ class Api::BaseController < ApplicationController
 
   def require_user!
     if !current_user
-      render json: { error: 'This method requires an authenticated user' }, status: 422
+      render json: { error: '422' }, status: 422
     elsif current_user.disabled?
-      render json: { error: 'Your login is currently disabled' }, status: 403
+      render json: { error: '403 - authentic user required' }, status: 403
     elsif !current_user.confirmed?
       render json: { error: 'Your login is missing a confirmed e-mail address' }, status: 403
     elsif !current_user.approved?

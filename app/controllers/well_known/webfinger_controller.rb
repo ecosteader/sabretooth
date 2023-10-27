@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
 module WellKnown
-  class WebfingerController < ActionController::Base
+  class WebfingerController < ActionController::Base # rubocop:disable Rails/ApplicationController
     include RoutingHelper
 
-    before_action { response.headers['Vary'] = 'Accept' }
     before_action :set_account
     before_action :check_account_suspension
 
@@ -19,7 +18,15 @@ module WellKnown
     private
 
     def set_account
-      @account = Account.find_local!(username_from_resource)
+      username = username_from_resource
+
+      @account = begin
+        if username == Rails.configuration.x.local_domain
+          Account.representative
+        else
+          Account.find_local!(username)
+        end
+      end
     end
 
     def username_from_resource
@@ -35,19 +42,22 @@ module WellKnown
     end
 
     def check_account_suspension
-      expires_in(3.minutes, public: true) && gone if @account.suspended?
+      gone if @account.suspended_permanently?
+    end
+
+    def gone
+      expires_in(3.minutes, public: true)
+      head 410
     end
 
     def bad_request
+      expires_in(3.minutes, public: true)
       head 400
     end
 
     def not_found
+      expires_in(3.minutes, public: true)
       head 404
-    end
-
-    def gone
-      head 410
     end
   end
 end
