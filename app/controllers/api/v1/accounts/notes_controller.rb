@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::V1::Accounts::PinsController < Api::BaseController
+class Api::V1::Accounts::NotesController < Api::BaseController
   include Authorization
 
   before_action -> { doorkeeper_authorize! :write, :'write:accounts' }
@@ -8,13 +8,13 @@ class Api::V1::Accounts::PinsController < Api::BaseController
   before_action :set_account
 
   def create
-    AccountPin.find_or_create_by!(account: current_account, target_account: @account)
-    render json: @account, serializer: REST::RelationshipSerializer, relationships: relationships_presenter
-  end
-
-  def destroy
-    pin = AccountPin.find_by(account: current_account, target_account: @account)
-    pin&.destroy!
+    if params[:comment].blank?
+      AccountNote.find_by(account: current_account, target_account: @account)&.destroy
+    else
+      @note = AccountNote.find_or_initialize_by(account: current_account, target_account: @account)
+      @note.comment = params[:comment]
+      @note.save! if @note.changed?
+    end
     render json: @account, serializer: REST::RelationshipSerializer, relationships: relationships_presenter
   end
 
