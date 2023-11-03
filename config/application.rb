@@ -35,7 +35,7 @@ require_relative '../lib/paperclip/transcoder'
 require_relative '../lib/paperclip/type_corrector'
 require_relative '../lib/paperclip/response_with_limit_adapter'
 require_relative '../lib/terrapin/multi_pipe_extensions'
-require_relative '../lib/mastodon/snowflake'
+#require_relative '../lib/mastodon/snowflake'
 require_relative '../lib/mastodon/version'
 require_relative '../lib/mastodon/rack_middleware'
 #require_relative 'tokenizer'
@@ -68,16 +68,15 @@ module Mastodon
     # config.load_defaults 6.0
     # config.autoloader = :zeitwerk
     # config.load_defaults 5.2
-    # config.autoloader = :zeitwerk
-
+     config.active_support.cache_format_version = 6.1
     # TODO: Release a version which uses the 7.0 defaults as specified above,
     # but preserves the 6.1 cache format as set below. In a subsequent change,
     # remove this line setting to 6.1 cache format, and then release another version.
     # https://guides.rubyonrails.org/upgrading_ruby_on_rails.html#new-activesupport-cache-serialization-format
     # https://github.com/mastodon/mastodon/pull/24241#discussion_r1162890242
     # config.active_support.cache_format_version = 6.0
-    config.active_record.cache_versioning = false
-    config.add_autoload_paths_to_load_path = false
+    # config.active_record.cache_versioning = false
+    #config.add_autoload_paths_to_load_path = false
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
@@ -195,16 +194,16 @@ module Mastodon
       end
     end
 
-    
-     if ENV['DISABLE_CACHE'] == 'true'
-        config.cache_store = :null_store
-            
-     else
-        config.cache_store = :redis_store, 'redis://localhost:6379/0/cache', { expires_in: 1.hour }
-    end  
+     # = REDIS_URL = "redis://localhost:6379/?family=6" 
+     #if ENV['DISABLE_CACHE'] == 'true'
+     #   config.cache_store = :null_store      
+     #else
+     #   config.cache_store = :redis_store, 'redis://localhost:6379/0/cache', { expires_in: 1.hour }
+    # end  
 
-   # config.autoload_paths += Dir[Rails.root.join('app', 'api', '*')]REDIS_URL = "redis://localhost:6379/?family=6"
-    config.paths.add File.join('app', 'api'), glob: File.join('**', '*.rb')
+    # config.paths.add File.join('app', 'api'), glob: File.join('**', '*.rb')
+    #  config.autoload_paths += Dir[Rails.root.join('app', 'api', '*')]
+
 
     config.active_job.queue_adapter = :sidekiq
 
