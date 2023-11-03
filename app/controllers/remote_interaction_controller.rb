@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class RemoteInteractionHelperController < ApplicationController
-  vary_by ''
+#  vary_by ''
 
   skip_before_action :require_functional!
   skip_around_action :set_locale

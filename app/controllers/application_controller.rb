@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   rescue_from Mastodon::RateLimitExceededError, with: :too_many_requests
 
   rescue_from HTTP::Error, OpenSSL::SSL::SSLError, with: :internal_server_error
-  rescue_from Mastodon::RaceConditionError, Stoplight::Error::RedLight, ActiveRecord::SerializationFailure, with: :service_unavailable
+  rescue_from Mastodon::RaceConditionError, ActiveRecord::SerializationFailure, with: :service_unavailable
 
   #rescue_from Seahorse::Client::NetworkingError do |e|
   #  Rails.logger.warn "Storage server error: #{e}"
