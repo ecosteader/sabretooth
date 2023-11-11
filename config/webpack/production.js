@@ -25,10 +25,12 @@ if (process.env.S3_ENABLED === 'true') {
   attachmentHost = null;
 }
 
-module.exports = merge(sharedConfig, {
-  mode: 'production',
-  devtool: 'source-map',
-  stats: 'normal',
+ 
+ module.exports = merge(sharedConfig, {
+  parallelism: 1,
+   mode: 'production',
+   devtool: 'source-map',
+   stats: 'normal',
   bail: true,
   optimization: {
     minimize: true,
