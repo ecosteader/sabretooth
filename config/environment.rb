@@ -5,3 +5,5 @@ require_relative 'application'
 Rails.application.initialize!
 
 ActiveRecord::SchemaDumper.ignore_tables = ['deprecated_preview_cards']
+
+#config.active_record.cache_versioning = false

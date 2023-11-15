@@ -53,8 +53,8 @@ Rails.application.configure do
   config.log_tags = [:request_id]
 
   # Use a different cache store in production.
-  config.cache_store = :redis_store, ENV['CACHE_REDIS_URL'], REDIS_CACHE_PARAMS
- # config.cache_store = :redis_store, ENV['REDIS_URL']
+#  config.cache_store = :redis_store, ENV['CACHE_REDIS_URL'], REDIS_CACHE_PARAMS
+#  config.cache_store = :redis_store, ENV['REDIS_URL']
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
