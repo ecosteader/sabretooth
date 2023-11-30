@@ -17,14 +17,14 @@ development:
     port: <%= ENV.fetch('DB_PORT', 5432) %>
     #host: <%= ENV['DB_HOST'] %>
     #port: <%= ENV['DB_PORT'] %>
-  replica:
-    <<: *default
-    database: <%= ENV['DB_NAME'] || 'mastodon_development' %>
-    username: <%= ENV['DB_USER'] %>
-    password: <%= (ENV['DB_PASS'] || '').to_json %>
-    host: <%= ENV['DB_HOST'] %>
-    port: <%= ENV['DB_PORT'] %>
-    replica: true
+#  replica:
+#    <<: *default
+#    database: <%= ENV['DB_NAME'] || 'mastodon_development' %>
+#    username: <%= ENV['DB_USER'] %>
+#    password: <%= (ENV['DB_PASS'] || '').to_json %>
+#    host: <%= ENV['DB_HOST'] %>
+#    port: <%= ENV['DB_PORT'] %>
+#    replica: true
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".

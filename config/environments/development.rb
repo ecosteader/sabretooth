@@ -43,10 +43,10 @@ Rails.application.configure do
   end
 
   # Generate random VAPID keys
-  Webpush.generate_key.tap do |vapid_key|
-    config.x.vapid_private_key = vapid_key.private_key
-    config.x.vapid_public_key = vapid_key.public_key
-  end
+  #Webpush.generate_key.tap do |vapid_key|
+  #  config.x.vapid_private_key = vapid_key.private_key
+  #  config.x.vapid_public_key = vapid_key.public_key
+  #end
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
