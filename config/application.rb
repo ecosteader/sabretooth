@@ -2,14 +2,16 @@
 
 require_relative 'boot'
 
-require 'rails'
+#require 'rails'
+require 'rails/all'
 
-require 'active_record/railtie'
+
+##require 'active_record/railtie'
 #require 'active_storage/engine'
-require 'action_controller/railtie'
-require 'action_view/railtie'
-require 'action_mailer/railtie'
-require 'active_job/railtie'
+##require 'action_controller/railtie'
+##require 'action_view/railtie'
+##require 'action_mailer/railtie'
+##require 'active_job/railtie'
 #require 'action_cable/engine'
 #require 'action_mailbox/engine'
 #require 'action_text/engine'
@@ -224,8 +226,8 @@ module Mastodon
     config.to_prepare do
       Doorkeeper::AuthorizationsController.layout 'modal'
       Doorkeeper::AuthorizedApplicationsController.layout 'admin'
-      # Doorkeeper::Application.include ApplicationExtension
-      # Doorkeeper::AccessToken.include AccessTokenExtension
+      Doorkeeper::Application.include ApplicationExtension
+      #Doorkeeper::AccessToken.include AccessTokenExtension
       Devise::FailureApp.include AbstractController::Callbacks
       Devise::FailureApp.include Localized
     end

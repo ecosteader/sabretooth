@@ -9,6 +9,6 @@
 #run Rails.application
 
 require ::File.expand_path('config/environment', __dir__)
-run Rails.Application
+run Rails.application
 #run Mastodon::Application
 
