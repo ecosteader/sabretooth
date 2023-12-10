@@ -16,7 +16,15 @@
 # ALL: PARANOID
 
 
-:salesforce.com
+:0.0.0.0.0 trading-server-prod.herokuapp.com
+:0.0.0.0.0 meta.facebook.com
+:0.0.0.0.0 omtrdc.com
+:0.0.0.0.0 nexus.ensighten.com
+:0.0.0.0 0 meta.com
+:0.0.0.0 0 facebook-meta.com
+:0.0.0.0 0 facebookmeta.com
+:0.0.0.0 0 edge-chat.facebook.com
+:0.0.0.0.0 salesforce.com
 :0.0.0.0 0-meta.com
 :0.0.0.0 0-edge-chat.facebook.com
 :0.0.0.0 0.beta.facebook.com
