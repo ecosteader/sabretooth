@@ -15,20 +15,44 @@
 # versions of Debian this has been the default.
 # ALL: PARANOID
 
+# /etc/hosts.deny: list of hosts that are _not_ allowed to access the system.
+#                  See the manual pages hosts_access(5) and hosts_options(5).
+#
+# Example:    ALL: some.host.name, .some.domain
+#             ALL EXCEPT in.fingerd: other.host.name, .other.domain
+#
+# If you're going to protect the portmapper use the name "rpcbind" for the
+# daemon name. See rpcbind(8) and rpc.mountd(8) for further information.
+#
+# The PARANOID wildcard matches any host whose name does not match its
+# address.
+#
+# You may wish to enable this to ensure any programs that don't
+# validate looked up hostnames still leave understandable logs. In past
+# versions of Debian this has been the default.
+# ALL: PARANOID
 
-:0.0.0.0.0 trading-server-prod.herokuapp.com
-:0.0.0.0.0 meta.facebook.com
-:0.0.0.0.0 omtrdc.com
-:0.0.0.0.0 nexus.ensighten.com
-:0.0.0.0 0 meta.com
-:0.0.0.0 0 facebook-meta.com
-:0.0.0.0 0 facebookmeta.com
-:0.0.0.0 0 edge-chat.facebook.com
-:0.0.0.0.0 salesforce.com
-:0.0.0.0 0-meta.com
-:0.0.0.0 0-edge-chat.facebook.com
-:0.0.0.0 0.beta.facebook.com
-:0.0.0.0 0.facebook.com
+:0.0.0.0 m.threads.net
+:0.0.0.0 meta.com
+:0.0.0.0 idfonline.facebook.com
+:0.0.0.0 facebookmeta.com
+:0.0.0.0 facebook.threads.net
+:0.0.0.0 trading-server-prod.herokuapp.com
+:0.0.0.0 meta.facebook.com
+:0.0.0.0 omtrdc.com
+:0.0.0.0 nexus.ensighten.com
+:0.0.0.0 instagram.threads.net
+:0.0.0.0 isr.threads.net
+:0.0.0.0 idfonline.threads.net
+:0.0.0.0 threads.net
+:0.0.0.0 facebook-meta.com
+:0.0.0.0 meta-facebook.com
+:0.0.0.0 threads.net
+:0.0.0.0 edge-chat.facebook.com
+:0.0.0.0 salesforce.com
+:0.0.0.0 tfbnw.net
+:0.0.0.0 m.meta.com
+:0.0.0.0 edge-chat.facebook.com
 :0.0.0.0 1-edge-chat.facebook.com
 :0.0.0.0 2-edge-chat.facebook.com
 :0.0.0.0 3-edge-chat.facebook.com
@@ -1265,11 +1289,14 @@
 :0.0.0.0 ns1.facebook.com
 :0.0.0.0 ns2.facebook.com
 :0.0.0.0 ns3.facebook.com
-:0.0.0.0 nsa.facebook.com
-:0.0.0.0 ntp.facebook.com
+:0.0.0.0 nsa.meta.com
+:0.0.0.0 ntp.meta.com
+:0.0.0.0 tp.meta.com
+:0.0.0.0 ntp.threads.com
+:0.0.0.0 nt.meta.com
+:0.0.0.0 n.facebook.com
 :0.0.0.0 o.beta.facebook.com
 :0.0.0.0 o.facebook.com
-:0.0.0.0 o.internet.org
 :0.0.0.0 ocbc.m.facebook.com
 :0.0.0.0 onepublicservice.m.facebook.com
 :0.0.0.0 onevedanta.m.facebook.com
@@ -1817,17 +1844,19 @@
 :0.0.0.0 whatsapp-cdn-shv-01-vie1.fbcdn.net
 :0.0.0.0 whatsapp-cdn-shv-02-sin6.fbcdn.net
 :0.0.0.0 whatsapp.com
+:0.0.0.0 zuck.instagram.com
 :0.0.0.0 white.instagram.com
+:0.0.0.0 zuckerbergs.instagram.com
+:0.0.0.0 racistsrothere.instagram.com
 :0.0.0.0 white.ish.instagram.com
 :0.0.0.0 wooga.m.facebook.com
 :0.0.0.0 work-98949980.facebook.com
-:0.0.0.0 ww.facebook.com
 :0.0.0.0 www-cdn.whatsapp.net
 :0.0.0.0 www.connect.facebook.net
 :0.0.0.0 www.facebook.com
 :0.0.0.0 www.facebook.de
 :0.0.0.0 www.facebook.fr
-:0.0.0.0 www.fbcdn.com
+:0.0.0.0 www.meta.fbcdn.com
 :0.0.0.0 www.fbcdn.net
 :0.0.0.0 www.graph.facebook.com
 :0.0.0.0 www.instagram.com
@@ -2196,6 +2225,9 @@
 :0.0.0.0 clearlead.com
 :0.0.0.0 clearleadtest.com
 :0.0.0.0 cloudapp.aria.akadns.net
+:0.0.0.0 cloudflare.threads.net
+:0.0.0.0 cloudflare.meta.com
+:0.0.0.0 cloudflare.instagram.com
 :0.0.0.0 cloudapp.net
 :0.0.0.0 clouddrive.com
 :0.0.0.0 clownoutbreak.com
@@ -2206,8 +2238,6 @@
 :0.0.0.0 codecs.microsoft.com
 :0.0.0.0 codesnippet.research.microsoft.com
 :0.0.0.0 codezonepremiere.com
-:0.0.0.0 com.mk
-:0.0.0.0 com.tn
 :0.0.0.0 commerce.microsoft.com
 :0.0.0.0 communication.microsoft.com
 :0.0.0.0 community.microsoft.com
@@ -3082,12 +3112,9 @@
 :0.0.0.0 xmlsoap.org
 :0.0.0.0 xsnsports.com
 :0.0.0.0 xtngm-ppe.com
-:0.0.0.0 yahoobingnetwork.com
-:0.0.0.0 zone.com
-:0.0.0.0 zootycooninsider.com
 :0.0.0.0 zootycooninsider.net
-:0.0.0.0 zootycooninsider.org
-
+:0.0.0.0 zuckerberg.org
+:0.0.0.0 royalcaribbean.com
 :0.0.0.0 a1.phobos.apple.com
 :0.0.0.0 a101.phobos.apple.com
 :0.0.0.0 a102.phobos.apple.com
@@ -3133,7 +3160,12 @@
 :0.0.0.0 concierge-mobile.apple.com
 :0.0.0.0 concierge.apple.com
 :0.0.0.0 consultants.apple.com
+:0.0.0.0 deals.cruiselines.com
 :0.0.0.0 cooljobs.apple.com
+:0.0.0.0 creative.rccl.com
+:0.0.0.0 rclcorporate.com
+:0.0.0.0 rclinvestor.com
+:0.0.0.0 www.creative.rccl.com
 :0.0.0.0 deimos.apple.com
 :0.0.0.0 deimos2.apple.com
 :0.0.0.0 deimos3.apple.com
