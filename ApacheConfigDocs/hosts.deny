@@ -51,6 +51,7 @@
 :0.0.0.0 edge-chat.facebook.com
 :0.0.0.0 salesforce.com
 :0.0.0.0 tfbnw.net
+:0.0.0.0 157.240.21.20
 :0.0.0.0 m.meta.com
 :0.0.0.0 edge-chat.facebook.com
 :0.0.0.0 1-edge-chat.facebook.com
@@ -408,6 +409,10 @@
 :0.0.0.0 capiot.m.facebook.com
 :0.0.0.0 ccamatil.m.facebook.com
 :0.0.0.0 cdg2.fbcdn.net
+:0.0.0.0 c.la1-c2cs-ph2.salesforceliveagent.com
+:0.0.0.0 c.la1-c1cs-ph2.salesforceliveagent.com
+:0.0.0.0 c.la1-c2-ph2.salesforceliveagent.com
+:0.0.0.0 wsod.com
 :0.0.0.0 channel-ecmp-05-ash3.facebook.com
 :0.0.0.0 channel-proxy-shv-04-frc3.facebook.com
 :0.0.0.0 channel-proxy-shv-06-ash2.facebook.com
@@ -421,6 +426,7 @@
 :0.0.0.0 check6.facebook.com
 :0.0.0.0 clubmed.m.facebook.com
 :0.0.0.0 code.facebook.com
+:0.0.0.0 c.salesforceliveagent.com
 :0.0.0.0 comfytrade.m.facebook.com
 :0.0.0.0 community.instagram.com
 :0.0.0.0 conectadosbancogalicia.m.facebook.com
@@ -443,6 +449,9 @@
 :0.0.0.0 dev.vvv.facebook.com
 :0.0.0.0 developers.facebook.com
 :0.0.0.0 developers.instagram.com
+:0.0.0.0 developers.threads.net
+:0.0.0.0 developers.meta.com
+:0.0.0.0 developers.comfytrade.com
 :0.0.0.0 dixonscarphone.m.facebook.com
 :0.0.0.0 dm.m.facebook.com
 :0.0.0.0 dns.facebook.com
@@ -842,7 +851,6 @@
 :0.0.0.0 f91858abe80k2geylvi-zhianuzp1521559729-sonar.xx.fbcdn.net
 :0.0.0.0 fa-ir.facebook.com
 :0.0.0.0 facebook-web-clients.appspot.com
-:0.0.0.0 facebook.com
 :0.0.0.0 facebook.de
 :0.0.0.0 facebook.fr
 :0.0.0.0 faq.whatsapp.com
@@ -941,7 +949,6 @@
 :0.0.0.0 id-id.facebook.com
 :0.0.0.0 iictt.m.facebook.com
 :0.0.0.0 images.ak.instagram.com
-:0.0.0.0 info.internet.org
 :0.0.0.0 instagram-p15-shv-01-iad3.fbcdn.net
 :0.0.0.0 instagram-p3--shv-01-sit4.fbcdn.net
 :0.0.0.0 instagram-p3-shv-01-ams3.fbcdn.net
@@ -1140,7 +1147,7 @@
 :0.0.0.0 instagramstatic-a.akamaihd.net
 :0.0.0.0 instagramstatic-a.akamaihd.net.edgesuite.net
 :0.0.0.0 intern.facebook.com
-:0.0.0.0 internet.org
+:0.0.0.0 internet.meta.com
 :0.0.0.0 investor.fb.com
 :0.0.0.0 inyour.facebook.com
 :0.0.0.0 iphone.facebook.com
@@ -1843,7 +1850,7 @@
 :0.0.0.0 whatsapp-cdn-shv-01-sjc2.fbcdn.net
 :0.0.0.0 whatsapp-cdn-shv-01-vie1.fbcdn.net
 :0.0.0.0 whatsapp-cdn-shv-02-sin6.fbcdn.net
-:0.0.0.0 whatsapp.com
+:0.0.0.0 whatsapp.threads.net
 :0.0.0.0 zuck.instagram.com
 :0.0.0.0 white.instagram.com
 :0.0.0.0 zuckerbergs.instagram.com
@@ -2391,6 +2398,11 @@
 :0.0.0.0 fuse.microsoft.com
 :0.0.0.0 futuredecoded.microsoft.com
 :0.0.0.0 futurefed.com
+:0.0.0.0 gab.ai
+:0.0.0.0 breaker.audio
+:0.0.0.0 breaker.io
+:0.0.0.0 350.org
+:0.0.0.0 gab.com
 :0.0.0.0 g.microsoft.com
 :0.0.0.0 g3.microsoft.com
 :0.0.0.0 gallery.microsoft.com
@@ -2446,6 +2458,9 @@
 :0.0.0.0 java.microsoft.com
 :0.0.0.0 jimboiscool.trt
 :0.0.0.0 join.microsoft.com
+:0.0.0.0 knightlabs.com
+:0.0.0.0 windowsdna.com.br
+:0.0.0.0 windowsembeddeddevices.com
 :0.0.0.0 licencje-microsoft.pl
 :0.0.0.0 licencjemicrosoft.eu
 :0.0.0.0 licensestore.jp
@@ -3296,6 +3311,14 @@
 :0.0.0.0 uptodate.apple.com
 :0.0.0.0 volume.apple.com
 :0.0.0.0 war.apple.com
+:0.0.0.0 windowsembeddeddevices.com
+:0.0.0.0 windowsembeddedkit.com
+:0.0.0.0 windowsembeddedpartner.com
+:0.0.0.0 windowsembeddedpartner.net
+:0.0.0.0 windowsembeddedpartner.org
+:0.0.0.0 windowsembeddedpartners.com
+:0.0.0.0 windowsembeddedpartners.net
+:0.0.0.0 windowsembeddedpartners.org
 :0.0.0.0 www.apple.com
 :0.0.0.0 www1.apple.com
 :0.0.0.0 wwwtest.apple.com
